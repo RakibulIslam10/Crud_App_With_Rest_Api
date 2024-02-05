@@ -13,7 +13,7 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-
+bool Loding = false;
 List<Productkey> ProductList = [];
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -125,7 +125,9 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context) => AddProductScreen(),
             ),
           );
+
           if (result != null && result == true) {
+            Loding = true;
             GetJsonFormApi();
           }
         },
@@ -181,6 +183,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> GetJsonFormApi() async {
+    setState(() {
+      Loding = true;
+    });
     ProductList.clear();
     Uri MyUri = Uri.parse("https://crud.teamrabbil.com/api/v1/ReadProduct");
     Response response = await get(MyUri);
@@ -192,6 +197,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ProductList.add(MyApikey);
         setState(() {});
       }
+      setState(() {
+        Loding = true;
+      });
     }
   }
 }
