@@ -155,6 +155,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       drawer: Drawer(),
+
+bottomNavigationBar: BottomNavigationBar(
+    selectedItemColor: ColorDarkBlue,
+
+    items: [
+  BottomNavigationBarItem(icon: Icon(CupertinoIcons.home),label: "Home"),
+
+  BottomNavigationBarItem(icon: Icon(CupertinoIcons.heart),label: "Favorite "),
+
+  BottomNavigationBarItem(icon: Icon(CupertinoIcons.person),label: "My Items"),
+]),
     );
   }
 
