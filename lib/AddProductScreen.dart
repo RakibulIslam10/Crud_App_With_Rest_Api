@@ -93,24 +93,22 @@ class _AddProductScreenState extends State<AddProductScreen> {
               SizedBox(
                   height: 50,
                   width: double.infinity,
-                  child: Visibility(replacement: const CircularProgressIndicator(),
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorDarkBlue),
-                        onPressed: () {
-                          if (_FormKey.currentState!.validate()) {
-                            PostFormApi();
-                            setState(() {
-                              Loding = true;
-                            });
-                          }
-                        },
-                        child: Loding ? const CircularProgressIndicator() : const Text(
-                          "Create",
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
-                        )),
-                  ))
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorDarkBlue),
+                      onPressed: () {
+                        if (_FormKey.currentState!.validate()) {
+                          CreadProduct();
+                          setState(() {
+                            Loding = true;
+                          });
+                        }
+                      },
+                      child: Loding ? const CircularProgressIndicator() : const Text(
+                        "Create",
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      )))
             ],
           ),
         ),
@@ -119,7 +117,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
   var Loding = false;
 
-  Future<void>PostFormApi()async {
+  Future<void>CreadProduct()async {
     setState(() {
       Loding = true;
     });

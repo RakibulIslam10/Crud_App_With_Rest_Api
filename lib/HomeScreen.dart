@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:restapicrudapp/AddProductScreen.dart';
@@ -13,6 +14,7 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
 bool Loding = false;
 List<Productkey> ProductList = [];
 
@@ -21,6 +23,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(CupertinoIcons.bell),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(CupertinoIcons.settings),
+          ),
+        ],
         title: const Text("My Product"),
       ),
       body: ProductList.isEmpty
@@ -88,19 +100,25 @@ class _HomeScreenState extends State<HomeScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
+                                  onPressed: () async {
+                                    final result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>  EditScreen(Allinfo: ProductList[index]),
+                                        builder: (context) => EditScreen(
+                                            Allinfo: ProductList[index]),
                                       ),
                                     );
+
+                                    if (result != null && result == true) {
+                                      Loding = true;
+                                      GetJsonFormApi();
+                                    }
                                   },
                                   child: const Text("Edit"),
                                 ),
                                 ElevatedButton(
                                   onPressed: () =>
-                                      MyDialogBOx(index, ProductList[index].sId),
+                                      MyDialogBOx(ProductList[index].sId!),
                                   child: const Text("Delete"),
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: ColorRed),
@@ -135,11 +153,12 @@ class _HomeScreenState extends State<HomeScreen> {
           "Add",
           style: TextStyle(fontSize: 16),
         ),
-      )
+      ),
+      drawer: Drawer(),
     );
   }
 
-  void MyDialogBOx(int index, id) {
+  void MyDialogBOx(String ProductsId) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -157,12 +176,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Text("Cancel"),
           ),
           OutlinedButton(
-            onPressed: () async {
-              Response response = await get(Uri.parse("https://crud.teamrabbil.com/api/v1/DeleteProduct/" + id));
-
-              setState(() {
-                ProductList.removeAt(index);
-              });
+            onPressed: () {
+              DeleteProducdt(ProductsId);
               Navigator.pop(context);
             },
             child: const Text(
@@ -199,6 +214,36 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       setState(() {
         Loding = true;
+      });
+    }
+  }
+
+  Future<void> DeleteProducdt(String ProductsId) async {
+    setState(() {
+      Loding = true;
+    });
+    Uri MyUri = Uri.parse(
+        "https://crud.teamrabbil.com/api/v1/DeleteProduct/$ProductsId");
+    Response response = await get(MyUri);
+    var ResponseDecode = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      GetJsonFormApi();
+    } else {
+      setState(() {
+        Loding = false;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Product Delete Faild!",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+              ),
+            ),
+            backgroundColor: ColorDarkBlue,
+          ),
+        );
       });
     }
   }

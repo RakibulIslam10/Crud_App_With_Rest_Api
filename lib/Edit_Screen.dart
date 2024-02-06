@@ -1,9 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:restapicrudapp/HomeScreen.dart';
 import 'package:restapicrudapp/ModelClass.dart';
 import 'package:restapicrudapp/Style.dart';
 
 class EditScreen extends StatefulWidget {
-  const EditScreen({super.key, required this.Allinfo, });
+  const EditScreen({
+    super.key,
+    required this.Allinfo,
+  });
 
   final Productkey Allinfo;
 
@@ -111,18 +118,56 @@ class _EditScreenState extends State<EditScreen> {
                           backgroundColor: ColorDarkBlue),
                       onPressed: () {
                         if (_FormKey.currentState!.validate()) {
-                          Navigator.pop(context);
+                          _UpdateProduct();
+                          setState(() {
+                            Loding = true;
+                          });
                         }
                       },
-                      child: const Text(
-                        "Update",
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      )))
+                      child: Loding
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : const Text(
+                              "Update",
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.bold),
+                            )))
             ],
           ),
         ),
       ),
     );
+  }
+
+  var Loding = false;
+
+  Future<void> _UpdateProduct() async {
+    setState(() {
+      Loding = true;
+    });
+    Uri uri = Uri.parse(
+        "https://crud.teamrabbil.com/api/v1/UpdateProduct/${widget.Allinfo.sId}");
+
+    Map<String, dynamic> Params = {
+      "Img": ImageController.text.trim(),
+      "ProductCode": CodeController.text.trim(),
+      "ProductName": NameController.text.trim(),
+      "Qty": QuantityController.text.trim(),
+      "TotalPrice": TotalController.text.trim(),
+      "UnitPrice": PriceController.text.trim(),
+    };
+
+    Response response = await post(uri,
+        body: jsonEncode(Params),
+        headers: {"Content-type": "application/json"});
+    if (response.statusCode == 200) {
+      var decodeResponse = jsonDecode(response.body);
+      if (decodeResponse["status"] == "success") {}
+      Navigator.pop(context,true);
+      setState(() {
+        Loding = false;
+      });
+    }
   }
 }
